@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+
+    <title>reCAPTCHA</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body style='background-color: transparent;margin:0;padding:0;'>
+    <form action="?" method="POST">
+        <div class="g-recaptcha"
+            data-sitekey="6LesmdgkAAAAAIxHKRUXRrVXLmMvc0jVh4J1xej5"
+            data-callback="captchaCallback">
+        </div>
+
+    </form>
+    <script>
+        function captchaCallback(response){
+            console.log(response);
+            if(typeof Captcha!=="undefined"){
+                Captcha.postMessage(response);
+            }
+        }
+        let step = 1
+        const Observe = (sel, opt, cb) => {
+            const Obs = new MutationObserver((m) => [...m].forEach(cb));
+            document.querySelectorAll(sel).forEach(el => Obs.observe(el, opt));
+        };
+          
+          // DEMO TIME:
+          setTimeout(
+              ()=>{
+                console.log(document.querySelector("body > div"))
+
+                document.querySelector("body > div") != undefined && Observe("body > div", {
+                attributesList: ["style"], 
+                attributeOldValue: true,
+                }, (m) => {
+                    if(m.target.getAttribute(m.attributeName).split(';').indexOf(' opacity: 1') && step == 1){
+                        console.log(`
+                            New value: ${m.target.getAttribute(m.attributeName)}
+                        `);
+                        if(typeof CaptchaClick!=="undefined"){
+                            CaptchaClick.postMessage(document.querySelector('body > div').innerHTML);
+                        }
+                        step++
+                    }else if(m.target.getAttribute(m.attributeName).split(';').indexOf(' opacity: 0') && step > 1){
+                        CaptchaClick.postMessage('');
+                        step = 1
+                    }
+                });
+            },3000)
+    </script>
+</body>
+</html>
+
+<html>
+<body>
